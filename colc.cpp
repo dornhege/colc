@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include <QApplication>
 #include <QColorDialog>
 
@@ -6,11 +7,22 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    QColorDialog diag;
-    diag.setOption(QColorDialog::DontUseNativeDialog);
-    diag.exec();
+    QColor startColor(255, 0, 0);
 
-    QColor color = diag.selectedColor();
+    if(argc == 4) {
+        std::string r = argv[1];
+        std::string g = argv[2];
+        std::string b = argv[3];
+        if(r.find(".") != std::string::npos ||
+                g.find(".") != std::string::npos ||
+                b.find(".") != std::string::npos) { // any '.' in the "numbers" means these are floats [0, 1]
+            startColor = QColor(255 * std::stod(r), 255 * std::stod(g), 255 * std::stod(b));
+        } else {
+            startColor = QColor(std::stoi(r), std::stoi(g), std::stoi(b));
+        }
+    }
+
+    QColor color = QColorDialog::getColor(startColor, nullptr, "Select Color", QColorDialog::DontUseNativeDialog);
 
     printf("RGB:\n");
     printf("%d %d %d\n", color.red(), color.green(), color.blue());
